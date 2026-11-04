@@ -8,7 +8,9 @@ function App() {
     const saved = localStorage.getItem('todos')
     return saved ? JSON.parse(saved) : []
   })
+
   const [inputValue, setInputValue] = useState('')
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos))
@@ -30,19 +32,34 @@ function App() {
     ))
   }
 
+  const filteredTodos = todos.filter((task) => {
+    if (filter === 'active') return !task.completed
+    if (filter === 'completed') return task.completed
+
+    return true
+  })
+
+  const activeTodosCount = todos.filter((task) => !task.completed).length
+
   return (
     <div>
       <h1>Todo App</h1>
+      <div>
+        <button onClick={() => setFilter('all')}>Wszystkie</button>
+        <button onClick={() => setFilter('active')}>Aktywne</button>
+        <button onClick={() => setFilter('completed')}>Ukończone</button>
+      </div>
+
       <input
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder='Wpisz zadanie...'
       />
       <button onClick={handleAdd}>Dodaj</button>
-      <p>Liczba zadań: {todos.length}</p>
+      <p>{activeTodosCount} zadań do zrobienia</p>
 
       <ul>
-        {todos.map((task) => (
+        {filteredTodos.map((task) => (
           <TodoItem
             key={task.id}
             task={task}
