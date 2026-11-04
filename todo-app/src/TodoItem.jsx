@@ -1,12 +1,17 @@
+import styles from './TodoItem.module.css'
+
 function TodoItem({task, onDelete, onToggle}) {
     return (
-        <li key={task.id}>
+        <li className={styles.item}>
             <input
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => onToggle(task.id)}
             />
-            {task.text}
+            <span className={task.completed ? styles.completed : ''}>
+                {task.text}
+            </span>
+            
             <button onClick={() => onDelete(task.id)}>Usuń</button>
         </li>
     )
