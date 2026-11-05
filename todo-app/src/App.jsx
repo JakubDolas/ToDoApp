@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
-  
-import TodoItem from './TodoItem'
+
+import Column from './Column'
+import styles from './App.module.css'
 
 
 function App() {
   const [todos, setTodos] = useState(() => {
-    const saved = localStorage.getItem('todos')
-    return saved ? JSON.parse(saved) : []
-  })
+  const saved = localStorage.getItem('todos')
+  console.log("Odczytano z localStorage przy starcie:", saved)
+  return saved ? JSON.parse(saved) : []
+})
 
   const [inputValue, setInputValue] = useState('')
-  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos))
@@ -18,7 +19,7 @@ function App() {
 
   const handleAdd = () => {
     if (inputValue.trim() === '') return
-    setTodos([...todos, {id: Date.now(), text: inputValue}])
+    setTodos([...todos, {id: Date.now(), text: inputValue, status: 'todo'}])
     setInputValue('')
   }
 
@@ -26,49 +27,50 @@ function App() {
     setTodos(todos.filter((task) => task.id !== id))
   }
 
-  const handleToggle = (id) => {
+  const handleStatusChange = (id, newStatus) => {
     setTodos(todos.map((task) =>
-      task.id === id ? {...task, completed: !task.completed} : task
+      task.id === id ? {...task, status: newStatus} : task
     ))
   }
 
-  const filteredTodos = todos.filter((task) => {
-    if (filter === 'active') return !task.completed
-    if (filter === 'completed') return task.completed
-
-    return true
-  })
-
-  const activeTodosCount = todos.filter((task) => !task.completed).length
+  const todoTasks = todos.filter((task) => task.status === 'todo')
+  const inProgressTasks = todos.filter((task) => task.status === 'inProgress')
+  const doneTasks = todos.filter((task) => task.status === 'done')
 
   return (
-    <div>
-      <h1>Todo App</h1>
-      <div>
-        <button onClick={() => setFilter('all')}>Wszystkie</button>
-        <button onClick={() => setFilter('active')}>Aktywne</button>
-        <button onClick={() => setFilter('completed')}>Ukończone</button>
-      </div>
-
-      <input
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        placeholder='Wpisz zadanie...'
-      />
-      <button onClick={handleAdd}>Dodaj</button>
-      <p>{activeTodosCount} zadań do zrobienia</p>
-
-      <ul>
-        {filteredTodos.map((task) => (
-          <TodoItem
-            key={task.id}
-            task={task}
-            onDelete={handleDelete}
-            onToggle={handleToggle}
+    <div className={styles.container}>
+      <h1 className={styles.title}>Tablica <span>zadań</span></h1>
+        <div className={styles.inputGroup}>  
+          <input className={styles.input}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder='Wpisz nowe zadanie...'
           />
-        ))}
-        
-      </ul>
+          <button className={styles.addButton} onClick={handleAdd}>Dodaj</button>
+        </div>
+
+      <p className={styles.counter}>{todoTasks.length} zadań do zrobienia</p>
+
+      <div className={styles.board}>
+        <Column
+          title="Do zrobienia"
+          tasks={todoTasks}
+          onDelete={handleDelete}
+          onStatusChange={handleStatusChange}
+        />
+        <Column
+          title="W trakcie"
+          tasks={inProgressTasks}
+          onDelete={handleDelete}
+          onStatusChange={handleStatusChange}
+        />
+        <Column
+          title="Zrobione"
+          tasks={doneTasks}
+          onDelete={handleDelete}
+          onStatusChange={handleStatusChange}
+        />
+      </div>
     </div>
   )
 }

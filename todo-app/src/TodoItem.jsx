@@ -1,20 +1,43 @@
 import styles from './TodoItem.module.css'
 
-function TodoItem({task, onDelete, onToggle}) {
-    return (
-        <li className={styles.item}>
-            <input
-                type="checkbox"
-                checked={task.completed}
-                onChange={() => onToggle(task.id)}
-            />
-            <span className={task.completed ? styles.completed : ''}>
-                {task.text}
-            </span>
-            
-            <button onClick={() => onDelete(task.id)}>Usuń</button>
-        </li>
-    )
+function TodoItem({ task, onDelete, onStatusChange }) {
+  return (
+    <li className={styles.item}>
+      <span className={`${styles.text} ${task.status === 'done' ? styles.completed : ''}`}>
+        {task.text}
+      </span>
+
+      <div className={styles.buttons}>
+        {task.status === 'inProgress' && (
+          <button onClick={() => onStatusChange(task.id, 'todo')}>
+            ←
+          </button>
+        )}
+
+        {task.status === 'done' && (
+          <button onClick={() => onStatusChange(task.id, 'inProgress')}>
+            ←
+          </button>
+        )}
+
+        {task.status === 'todo' && (
+          <button onClick={() => onStatusChange(task.id, 'inProgress')}>
+            →
+          </button>
+        )}
+
+        {task.status === 'inProgress' && (
+          <button onClick={() => onStatusChange(task.id, 'done')}>
+            →
+          </button>
+        )}
+
+        <button className={styles.deleteBtn} onClick={() => onDelete(task.id)}>
+          Usuń
+        </button>
+      </div>
+    </li>
+  )
 }
 
 export default TodoItem
