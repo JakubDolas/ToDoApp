@@ -6,12 +6,13 @@ import styles from './App.module.css'
 
 function App() {
   const [todos, setTodos] = useState(() => {
-  const saved = localStorage.getItem('todos')
-  console.log("Odczytano z localStorage przy starcie:", saved)
-  return saved ? JSON.parse(saved) : []
-})
+    const saved = localStorage.getItem('todos')
+    console.log("Odczytano z localStorage przy starcie:", saved)
+    return saved ? JSON.parse(saved) : []
+  })
 
   const [inputValue, setInputValue] = useState('')
+  const [draggedTaskId, setDraggedTaskId] = useState(null)
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos))
@@ -54,21 +55,30 @@ function App() {
       <div className={styles.board}>
         <Column
           title="Do zrobienia"
+          status="todo"
           tasks={todoTasks}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
+          setDraggedTaskId={setDraggedTaskId}
+          draggedTaskId={draggedTaskId}
         />
         <Column
           title="W trakcie"
+          status="inProgress"
           tasks={inProgressTasks}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
+          setDraggedTaskId={setDraggedTaskId}
+          draggedTaskId={draggedTaskId}
         />
         <Column
           title="Zrobione"
+          status="done"
           tasks={doneTasks}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
+          setDraggedTaskId={setDraggedTaskId}
+          draggedTaskId={draggedTaskId}
         />
       </div>
     </div>

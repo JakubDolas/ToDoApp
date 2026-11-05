@@ -1,8 +1,12 @@
 import styles from './TodoItem.module.css'
 
-function TodoItem({ task, onDelete, onStatusChange }) {
+function TodoItem({ task, onDelete, onStatusChange, setDraggedTaskId }) {
   return (
-    <li className={styles.item}>
+    <li
+      className={styles.item}
+      draggable="true"
+      onDragStart={() => setDraggedTaskId(task.id)}
+    >
       <span className={`${styles.text} ${task.status === 'done' ? styles.completed : ''}`}>
         {task.text}
       </span>
